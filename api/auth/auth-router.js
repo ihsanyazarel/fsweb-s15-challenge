@@ -1,7 +1,9 @@
-const router = require('express').Router();
+const bcryptjs = require("bcryptjs");
+const userModel = require("../model/userModel");
+const router = require("express").Router();
 
-router.post('/register', (req, res) => {
-  res.end('kayıt olmayı ekleyin, lütfen!');
+router.post("/register", async (req, res, next) => {
+  // res.end('kayıt olmayı ekleyin, lütfen!');
   /*
     EKLEYİN
     Uçnoktanın işlevselliğine yardımcı olmak için middlewarelar yazabilirsiniz.
@@ -27,10 +29,19 @@ router.post('/register', (req, res) => {
     4- Kullanıcı adı alınmışsa BAŞARISIZ kayıtta,
       şu mesajı içermelidir: "username alınmış".
   */
+  try {
+    const {username, password} = req.body;
+    const hashedPassword = bcryptjs.hashSync(password,8);
+    const newUser = {username: username, password: hashedPassword};
+    const insertedUser = await userModel.insertUser(newUser);
+    res.json(insertedUser);
+  } catch (error) {
+    next(error);
+  }
 });
 
-router.post('/login', (req, res) => {
-  res.end('girişi ekleyin, lütfen!');
+router.post("/login", (req, res) => {
+  res.end("girişi ekleyin, lütfen!");
   /*
     EKLEYİN
     Uçnoktanın işlevselliğine yardımcı olmak için middlewarelar yazabilirsiniz.
